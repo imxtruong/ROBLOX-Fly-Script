@@ -1,161 +1,232 @@
--- Made By zack;#6969
+_G.AutoFarmBounty = true
 
--- Instances:
-
-local FlyScript = Instance.new("ScreenGui")
-local Gradient = Instance.new("Frame")
-local UIGradient = Instance.new("UIGradient")
-local UICorner = Instance.new("UICorner")
-local Button = Instance.new("TextButton")
-local Shadow = Instance.new("Frame")
-local TextLabel = Instance.new("TextLabel")
-
---Properties:
-
-FlyScript.Name = "FlyScript"
-FlyScript.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-FlyScript.ResetOnSpawn = false
-
-Gradient.Name = "Gradient"
-Gradient.Parent = FlyScript
-Gradient.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-Gradient.BorderColor3 = Color3.fromRGB(27, 42, 53)
-Gradient.BorderSizePixel = 0
-Gradient.Position = UDim2.new(0.0199062824, 0, 0.781767964, 0)
-Gradient.Size = UDim2.new(0, 231, 0, 81)
-
-UIGradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0.00, Color3.fromRGB(57, 104, 252)), ColorSequenceKeypoint.new(1.00, Color3.fromRGB(51, 68, 175))}
-UIGradient.Parent = Gradient
-
-UICorner.CornerRadius = UDim.new(0.0399999991, 0)
-UICorner.Parent = Gradient
-
-Button.Name = "Button"
-Button.Parent = Gradient
-Button.BackgroundColor3 = Color3.fromRGB(77, 100, 150)
-Button.BorderSizePixel = 0
-Button.Position = UDim2.new(0.0921155736, 0, 0.238353431, 0)
-Button.Size = UDim2.new(0, 187, 0, 41)
-Button.ZIndex = 2
-Button.Font = Enum.Font.GothamSemibold
-Button.Text = ""
-Button.TextColor3 = Color3.fromRGB(255, 255, 255)
-Button.TextScaled = true
-Button.TextSize = 14.000
-Button.TextWrapped = true
-
-Shadow.Name = "Shadow"
-Shadow.Parent = Button
-Shadow.BackgroundColor3 = Color3.fromRGB(53, 69, 103)
-Shadow.BorderSizePixel = 0
-Shadow.Size = UDim2.new(1, 0, 1, 4)
-
-TextLabel.Parent = Gradient
-TextLabel.AnchorPoint = Vector2.new(0.5, 0.5)
-TextLabel.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
-TextLabel.BackgroundTransparency = 1.000
-TextLabel.BorderColor3 = Color3.fromRGB(27, 42, 53)
-TextLabel.BorderSizePixel = 0
-TextLabel.Position = UDim2.new(0.487012982, 0, 0.5, 0)
-TextLabel.Size = UDim2.new(0.878787875, -20, 0.728395045, -20)
-TextLabel.ZIndex = 2
-TextLabel.Font = Enum.Font.GothamBold
-TextLabel.Text = "Fly"
-TextLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-TextLabel.TextScaled = true
-TextLabel.TextSize = 14.000
-TextLabel.TextWrapped = true
-Button.MouseButton1Down:connect(function()
-	repeat wait()
-	until game.Players.LocalPlayer and game.Players.LocalPlayer.Character and game.Players.LocalPlayer.Character:findFirstChild("Torso") and game.Players.LocalPlayer.Character:findFirstChild("Humanoid")
-	local mouse = game.Players.LocalPlayer:GetMouse()
-	repeat wait() until mouse
-	local plr = game.Players.LocalPlayer
-	local torso = plr.Character.Torso
-	local flying = true
-	local deb = true
-	local ctrl = {f = 0, b = 0, l = 0, r = 0}
-	local lastctrl = {f = 0, b = 0, l = 0, r = 0}
-	local maxspeed = 50
-	local speed = 0
-
-	function Fly()
-		local bg = Instance.new("BodyGyro", torso)
-		bg.P = 9e4
-		bg.maxTorque = Vector3.new(9e9, 9e9, 9e9)
-		bg.cframe = torso.CFrame
-		local bv = Instance.new("BodyVelocity", torso)
-		bv.velocity = Vector3.new(0,0.1,0)
-		bv.maxForce = Vector3.new(9e9, 9e9, 9e9)
-		repeat wait()
-			plr.Character.Humanoid.PlatformStand = true
-			if ctrl.l + ctrl.r ~= 0 or ctrl.f + ctrl.b ~= 0 then
-				speed = speed+.5+(speed/maxspeed)
-				if speed > maxspeed then
-					speed = maxspeed
-				end
-			elseif not (ctrl.l + ctrl.r ~= 0 or ctrl.f + ctrl.b ~= 0) and speed ~= 0 then
-				speed = speed-1
-				if speed < 0 then
-					speed = 0
-				end
-			end
-			if (ctrl.l + ctrl.r) ~= 0 or (ctrl.f + ctrl.b) ~= 0 then
-				bv.velocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (ctrl.f+ctrl.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(ctrl.l+ctrl.r,(ctrl.f+ctrl.b)*.2,0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p))*speed
-				lastctrl = {f = ctrl.f, b = ctrl.b, l = ctrl.l, r = ctrl.r}
-			elseif (ctrl.l + ctrl.r) == 0 and (ctrl.f + ctrl.b) == 0 and speed ~= 0 then
-				bv.velocity = ((game.Workspace.CurrentCamera.CoordinateFrame.lookVector * (lastctrl.f+lastctrl.b)) + ((game.Workspace.CurrentCamera.CoordinateFrame * CFrame.new(lastctrl.l+lastctrl.r,(lastctrl.f+lastctrl.b)*.2,0).p) - game.Workspace.CurrentCamera.CoordinateFrame.p))*speed
-			else
-				bv.velocity = Vector3.new(0,0.1,0)
-			end
-			bg.cframe = game.Workspace.CurrentCamera.CoordinateFrame * CFrame.Angles(-math.rad((ctrl.f+ctrl.b)*50*speed/maxspeed),0,0)
-		until not flying
-		ctrl = {f = 0, b = 0, l = 0, r = 0}
-		lastctrl = {f = 0, b = 0, l = 0, r = 0}
-		speed = 0
-		bg:Destroy()
-		bv:Destroy()
-		plr.Character.Humanoid.PlatformStand = false
-	end
-	mouse.KeyDown:connect(function(key)
-		if key:lower() == "e" then
-			if flying then flying = false
-			else
-				flying = true
-				Fly()
-			end
-		elseif key:lower() == "w" then
-			ctrl.f = 1
-		elseif key:lower() == "s" then
-			ctrl.b = -1
-		elseif key:lower() == "a" then
-			ctrl.l = -1
-		elseif key:lower() == "d" then
-			ctrl.r = 1
-		end
-	end)
-	mouse.KeyUp:connect(function(key)
-		if key:lower() == "w" then
-			ctrl.f = 0
-		elseif key:lower() == "s" then
-			ctrl.b = 0
-		elseif key:lower() == "a" then
-			ctrl.l = 0
-		elseif key:lower() == "d" then
-			ctrl.r = 0
-		end
-	end)
-	Fly()
-
+spawn(function()
+    pcall(function()
+        game:GetService("RunService").RenderStepped:connect(function()
+            if _G.AutoFarmBounty and TargetPlayerAim ~= nil and game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool") and game.Players.LocalPlayer.Character[game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool").Name]:FindFirstChild("MousePos") then
+                local args = {
+                    [1] = game:GetService("Players"):FindFirstChild(TargetPlayerAim).Character.HumanoidRootPart.Position
+                }
+                game:GetService("Players").LocalPlayer.Character[game.Players.LocalPlayer.Character:FindFirstChildOfClass("Tool").Name].RemoteEvent:FireServer(unpack(args))
+            end
+        end)
+    end)
 end)
--- Scripts:
 
-local function LHMZZV_fake_script() -- FlyScript.Script 
-	local script = Instance.new('Script', FlyScript)
 
-	frame = script.Parent.Gradient -- Take out {}s, and put name of frame
-	frame.Draggable = true
-	frame.Active = true
-	frame.Selectable = true
+spawn(function()
+pcall(function()
+if _G.AutoFarmBounty then
+while wait() do
+if game.Players.LocalPlayer.Character.Humanoid.Health > 0 then
+game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("SetSpawnPoint")
 end
-coroutine.wrap(LHMZZV_fake_script)()
+end
+end
+end)
+end)
+
+	function Tween(P1)
+		Distance = (P1.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
+		if Distance < 250 then
+			Speed = 600
+		elseif Distance < 500 then
+			Speed = 400
+		elseif Distance < 1000 then
+			Speed = 350
+		elseif Distance >= 1000 then
+			Speed = 200
+		end
+		game:GetService("TweenService"):Create(
+			game.Players.LocalPlayer.Character.HumanoidRootPart,
+			TweenInfo.new(Distance/Speed, Enum.EasingStyle.Linear),
+			{CFrame = P1}
+		):Play()
+	end
+	
+	function Tween(P1)
+		Distance = (P1.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude
+		if Distance < 1000 then
+			Speed = 400
+		elseif Distance >= 1000 then
+			Speed = 250
+		end
+		game:GetService("TweenService"):Create(
+			game.Players.LocalPlayer.Character.HumanoidRootPart,
+			TweenInfo.new(Distance/Speed, Enum.EasingStyle.Linear),
+			{CFrame = P1}
+		):Play()
+		Clip = true
+		wait(Distance/Speed)
+		Clip = false
+	end
+
+spawn(function()
+while wait() do
+pcall(function()
+if _G.AutoFarmBounty then
+if not game:GetService("Players").LocalPlayer.Character:FindFirstChild("HasBuso") then
+game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("Buso")
+end
+end
+end)
+end
+end)
+
+local Delay = 1
+
+CastlePostoMansion = CFrame.new(-5084.8447265625, 316.48101806641, -3145.3752441406)
+MansiontoCastlePos = CFrame.new(-12464.596679688, 376.30590820312, -7567.2626953125)
+Castletophydra = CFrame.new(-5095.33984375, 316.48101806641, -3168.3134765625)
+HydratoCastle = CFrame.new(5741.869140625, 611.94750976562, -282.61154174805)
+spawn(function()
+while wait() do
+pcall(function()
+if _G.AutoFarmBounty then
+for i,v in pairs(game:GetService("Workspace").Characters:GetChildren()) do
+if v.Name ~= game.Players.LocalPlayer.Name then
+if v:WaitForChild("Humanoid").Health > 0 and (game.Players.LocalPlayer.Character.HumanoidRootPart.Position - v.HumanoidRootPart.Position).Magnitude <= 17000 then
+plyselecthunthelpold = v.Humanoid.Health
+repeat task.wait()
+NameTarget = v.Name
+if tostring(game.Players.LocalPlayer.Team) == "Pirates" then
+Tween(v.HumanoidRootPart.CFrame * CFrame.new(0,0,15))
+            elseif tostring(game.Players.LocalPlayer.Team) == "Marines" then
+if game.Players[NameTarget].Team ~= game.Players.LocalPlayer.Team then
+Tween(v.HumanoidRootPart.CFrame * CFrame.new(0,0,15))
+end
+end
+spawn(function()
+if (v.HumanoidRootPart.Position - game.Players.LocalPlayer.Character.HumanoidRootPart.Position).Magnitude <= 150 then
+    spawn(function()
+    Melee()
+    SY()
+    SC()
+    SZ()
+    SX()
+    wait(1)
+    Sword()
+    SZ()
+    SX()
+    wait(1)
+    Gun()
+    SZ()
+    SX()
+    end)
+end
+end)
+v.HumanoidRootPart.CanCollide = false
+TargetSelectHunt = v.Humanoid
+until _G.AutoFarmBounty == false or v.Humanoid.Health == 0 or not v:FindFirstChild("HumanoidRootPart") or not v:FindFirstChild("Humanoid") or not v.Parent or NextplySelect == true
+NextplySelect = false
+StartCheckTarget = false
+end
+end
+end
+end
+end)
+end
+end)
+
+function Melee()
+for i,v in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
+    if v:IsA("Tool") then
+        if v.ToolTip == "Melee" then -- "Blox Fruit" , "Sword" , "Wear" , "Agility"
+            game.Players.LocalPlayer.Character.Humanoid:EquipTool(v)
+        end
+    end
+end
+end
+function Sword()
+    for i,v in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
+        if v:IsA("Tool") then
+            if v.ToolTip == "Sword" then -- "Blox Fruit" , "Sword" , "Wear" , "Agility"
+                game.Players.LocalPlayer.Character.Humanoid:EquipTool(v)
+            end
+        end
+    end
+    end
+    function Gun()
+        for i,v in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
+            if v:IsA("Tool") then
+                if v.ToolTip == "Gun" then -- "Blox Fruit" , "Sword" , "Wear" , "Agility"
+                    game.Players.LocalPlayer.Character.Humanoid:EquipTool(v)
+                end
+            end
+        end
+        end
+
+        function SY()
+            game:GetService("VirtualInputManager"):SendKeyEvent(true,"Y",false,game)
+            game:GetService("VirtualInputManager"):SendKeyEvent(false,"Y",false,game)
+        end
+
+function SZ()
+    game:GetService("VirtualInputManager"):SendKeyEvent(true,"Z",false,game)
+    game:GetService("VirtualInputManager"):SendKeyEvent(false,"Z",false,game)
+end
+
+function SX()
+    game:GetService("VirtualInputManager"):SendKeyEvent(true,"X",false,game)
+    game:GetService("VirtualInputManager"):SendKeyEvent(false,"X",false,game)
+end
+
+function SC()
+    game:GetService("VirtualInputManager"):SendKeyEvent(true,"C",false,game)
+    game:GetService("VirtualInputManager"):SendKeyEvent(false,"C",false,game)
+end
+spawn(function()
+pcall(function()
+while task.wait() do
+if _G.AutoFarmBounty then
+game:GetService("Players").LocalPlayer.PlayerGui.Main.InCombat.Visible = false
+game:GetService("Players").LocalPlayer.PlayerGui.Main.SafeZone.Visible = false
+end
+end
+end)
+end)
+
+spawn(function()
+pcall(function()
+while wait() do
+if _G.AutoFarmBounty then
+if TargetSelectHunt ~= nil then
+if StartCheckTarget then
+wait(6.5)
+if TargetSelectHunt.Health == TargetSelectHunt.MaxHealth or TargetSelectHunt.Health >= plyselecthunthelpold then
+NextplySelect = true
+TargetSelectHunt = nil
+end
+end
+end
+end
+end
+end)
+end)
+
+spawn(function()
+pcall(function()
+while wait(.1) do
+if _G.AutoFarmBounty then
+if game:GetService("Players").LocalPlayer.PlayerGui.Main.PvpDisabled.Visible == true then
+game:GetService("ReplicatedStorage").Remotes.CommF_:InvokeServer("EnablePvp")
+end
+end
+end
+end)
+end)
+
+spawn(function()
+while wait() do
+if _G.AutoFarmBounty then
+pcall(function()
+wait(150)
+Hop()
+Hop()
+Hop()
+Hop()
+Hop()
+end)
+end
+end
+end)
